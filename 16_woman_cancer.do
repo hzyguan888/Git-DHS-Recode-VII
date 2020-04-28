@@ -4,6 +4,8 @@ gen w_papsmear = .
 *w_mammogram	Women received a mammogram (1/0)
 gen w_mammogram = .
 
+//Add another variable about the recall period country specific.
+
 /*
 capture confirm variable s714dd s714ee 
 if _rc==0 {
