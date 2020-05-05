@@ -1,5 +1,3 @@
-
-
 ******************************
 *** Antenatal care *********** 
 ******************************   
@@ -40,12 +38,16 @@
 	local lab: variable label `var' 
 
     replace `var' = . if ///
-	!regexm("`lab'","doctor|nurse|midwife|aide soignante|assistante accoucheuse|clinical officer|mch aide|trained|auxiliary birth attendant|physician assistant|professional|ferdsher|skilled|community health care provider|birth attendant|hospital/health center worker|hew|auxiliary|icds|feldsher|mch|vhw|village health team|health personnel|gynecolog(ist|y)|obstetrician|internist|pediatrician|family welfare visitor|medical assistant|health assistant") ///
-	|regexm("`lab'","na^|-na|traditional birth attendant|untrained|unquallified|empirical midwife")  
+	!regexm("`lab'","trained") & (!regexm("`lab'","doctor|nurse|midwife|mifwife|aide soignante|assistante accoucheuse|clinical officer|mch aide|auxiliary birth attendant|physician assistant|professional|ferdsher|feldshare|skilled|community health care provider|birth attendant|hospital/health center worker|hew|auxiliary|icds|feldsher|mch|vhw|village health team|health personnel|gynecolog(ist|y)|obstetrician|internist|pediatrician|family welfare visitor|medical assistant|health assistant|matron|general practitioner") ///
+	|regexm("`lab'","na^|-na|traditional birth attendant|untrained|unquallified|empirical midwife|box"))
 
 	replace `var' = . if !inlist(`var',0,1)
 
 	 }
+	if inlist(name, "Benin2017") {
+		replace m2e = .
+		replace m2h = .
+	}
 
 	/* do consider as skilled if contain words in the first group but don't contain any words in the second group */
 
@@ -53,31 +55,6 @@
 	
 	*c_anc_eff: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples) of births in last 2 years
 
-	/*
-	#delimit ;
-	if 	name == "Afghanistan2015" | 
-		name == "Myanmar2015" | 
-		name == "Angola2015" |
-		name == "Ethiopia2016" |
-		name == "Malawi2015" |
-		name == "Uganda2016" |
-		name == "Armenia2015" |
-		name == "Albania2017" |
-		name == "Haiti2016"|
-		name == "Indonesia2017" |
-		name == "Jordan2017" {;
-	#delimit cr 
-		egen anc_skill = rowtotal(m2a m2b m2c m2d m2e m2f),mi                  //missing option generate missing if all variables are missing.
-		mdesc m2a m2b m2c m2d m2e m2f //there are missing value
-	 }
-	if inlist(name, "Tanzania2015") {
-		egen anc_skill = rowtotal(m2a m2b m2c m2g m2h m2i),mi                  //missing option generate missing if all variables are missing.
-		mdesc m2a m2b m2c m2g m2h m2i //there are missing value
-	 }
-	if inlist(name, "Nepal2016") {
-		egen anc_skill = rowtotal(m2a m2b m2d m2e),mi                  //missing option generate missing if all variables are missing.
-	 }
-	 */
 	egen anc_blood = rowtotal(m42c m42d m42e),mi
 
 	gen c_anc_eff = (c_anc == 1 & anc_skill>0 & anc_blood == 3) 
@@ -138,7 +115,8 @@
 	
 	*c_anc_ir: iron supplements taken during pregnancy of births in last 2 years
 	egen anc_ir = rowtotal(m45 h42),mi
-	gen c_anc_ir = inrange(anc_ir,1,2 ) if  !mi(anc_ir)
+	gen c_anc_ir = inrange(anc_ir,1,2) if  !mi(anc_ir)
+	//replace c_anc_ir = . if m45 == 8 | h42 == 8
 	
 	*c_anc_ir_q: iron supplements taken during pregnancy among ANC users of births in last 2 years
 

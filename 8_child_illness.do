@@ -21,65 +21,14 @@
 		replace c_diarrhea_hmf=. if h14  ==8|h14  ==9 | h14  ==. 
 		
 *c_diarrhea_pro	The treatment was provided by a formal provider (all public provider except other public, pharmacy, and private sector)
-
-/*
-	gen c_diarrhea_pro = 0 if c_diarrhea == 1
-		
-		if inlist(name,"Afghanistan2015") {
-			global h12 "h12a h12b h12c h12d h12e h12f h12g h12j h12l h12s h12t h12w"
-		}
-		if inlist(name,"Myanmar2015") {
-			global h12 "h12a h12b h12c h12d h12e h12f h12g h12j h12l h12m  h12p h12q h12r h12v"
-		}       // include public traditional medical clinic(h12g), however exclue private traditional medical clinic(h12n)
-		if inlist(name,"Angola2015") {
-			global h12 "h12a h12b h12c h12d h12e h12j h12m"
-		}  
-		if inlist(name,"Ethiopia2016") {
-			global h12 "h12a h12b h12c h12d h12e h12f h12g h12j h12l h12m h12w"
-		}
-		if inlist(name,"Malawi2015") {
-			global h12 "h12a h12b h12c h12d h12e h12j h12l h12m h12n h12o h12p h12q"
-		}
-		if inlist(name,"Uganda2016") {
-			global h12 "h12a h12b h12c h12d h12j h12l h12m h12n h12z"
-		}
-		if inlist(name,"Armenia2015") {
-			global h12 "h12a h12e h12f h12l"
-		}
-		if inlist(name,"Tanzania2015") {
-			global h12 "h12a h12b h12c h12d h12e h12f h12g h12h h12j h12l h12m h12n h12o h12p h12q h12t h12u"
-		}
-		if inlist(name,"Albania2017") {
-			global h12 "h12a h12b h12c h12d h12f h12g h12h h12j h12l h12n h12o h12p h12q "
-		}
-		if inlist(name,"Nepal2016") {
-			global h12 "h12a h12b h12c h12d h12e h12g h12h h12j h12l h12n h12o h12p h12q "
-		}
-		if inlist(name,"Haiti2016") {
-			global h12 "h12a h12j h12l"
-		}
-		if inlist(name,"Indonesia2017") {
-			global h12 "h12a h12b h12c h12d h12e h12g h12h h12j h12l h12m h12n h12o "
-		} // not sure about the private general practitioner h12l
-		if inlist(name,"Jordan2017") {
-			global h12 "h12a h12b h12c h12d h12e h12j h12l h12m h12n"
-		} 
-		
-		foreach var in $h12 {
-			replace c_diarrhea_pro = 1 if c_diarrhea_pro == 0 & `var' == 1 
-			replace c_diarrhea_pro = . if `var' == 8 
-		}
-*/		
-		
-
 	
-		foreach var of varlist h12a h12b h12c h12d h12e h12f h12g h12h h12i h12j h12k h12l ///
-       h12m h12n h12o h12p h12q h12r h12s h12t h12u h12v h12w h12x {
+		foreach var of varlist h12a-h12x {
                  local lab: variable label `var' 
         replace `var' = 0 if ///
-                 regexm("`lab'","(other|shop|pharmacy|market|kiosk|relative|friend|church|drug|addo|hilot|traditional|cs private medical|cs public sector)") ///
-                 & !regexm("`lab'","(ngo|hospital|medical center|traditional practioner$)")  
-                 /* do not consider formal if contain words in 
+                 regexm("`lab'","(other|shop|pharmacy|market|kiosk|relative|friend|church|drug|addo|hilot|traditional|cs private medical|cs public sector|no treatment)") ///
+                 & !regexm("`lab'","(ngo|hospital|medical center|traditional practioner$|sub health center|health center|aid post|trained vhv and other government|maternity home|diagnostic center|wome('s|n's) consultation|(pol|po)yclinic|fap|emergency services|ambulatory/family doctor office)")  
+				 			 
+/* do not consider formal if contain words in 
                  the first group but don't contain any words in the second group */
        }
        order h12*,sequential
@@ -88,22 +37,19 @@
        gen c_diarrhea_pro = 0 if c_diarrhea == 1
        replace c_diarrhea_pro = 1 if pro >= 1 
        replace c_diarrhea_pro = . if pro == . 
-    
-
-		
-		
+    	
 		
 *c_diarrhea_mof	Child with diarrhea received more fluids
         gen c_diarrhea_mof = (h38 == 5) if !inlist(h38,.,8) & c_diarrhea == 1
 
-*c_diarrhea_medfor Get formal medicine except (ors hmf home other_med). 
+*c_diarrhea_medfor Get formal medicine except (ors hmf home other_med, country specific). 
         egen medfor = rowtotal(h12z h15 h15a h15b h15c h15e h15g h15h h15i),mi
 		gen c_diarrhea_medfor = ( medfor > = 1 ) if c_diarrhea == 1
 		// formal medicine don't include "home remedy, herbal medicine and other"
 		replace c_diarrhea_medfor = . if h12z == 8 | h15 == 8 | h15a == 8 | h15b == 8 | h15c == 8 | h15e == 8  | h15g == 8 | h15h == 8 | h15i == 8			 
 	
 					 
-*c_diarrhea_med	Child with diarrhea received any medicine other than ORS or hmf
+*c_diarrhea_med	Child with diarrhea received any medicine other than ORS or hmf (country specific)
         egen med = rowtotal(h12z h15 h15a h15b h15c h15d h15e h15f h15g h15h h15i),mi
 		gen c_diarrhea_med = ( med > = 1 ) if c_diarrhea == 1
 		replace c_diarrhea_med = . if h12z == 8 | h15 == 8 | h15a == 8 | h15b == 8 | h15c == 8 | h15d == 8 | h15e == 8 | h15f == 8 | h15g == 8 | h15h == 8 | h15i == 8
@@ -149,104 +95,56 @@
 		
 		gen c_ari2=1 if h31b == 1 & ccough == 1
 		replace c_ari2=0 if h31b==0 | ccough == 0
-
-		
-		/*
-		gen c_ari = .
-		
-		replace c_ari = 1 if inlist(h31,1,2) & h31b == 1 & inlist(h31c,1,3)		// children with cough and rapid breathing originating from chest
-		replace c_ari = 0 if h31 == 0 | h31b == 0 | inlist(h31c,2,6)
-		replace c_ari = . if inlist(h31,8,9) | inlist(h31b,8,9) | inlist(h31c,8,9) 
-*/
 		
 *c_treatARI/c_treatARI2	   Child with acute respiratory infection (ARI) /ARI2 symptoms seen by formal provider
-/*
-		gen c_treatARI= 0 if c_ari == 1
-		gen c_treatARI2= 0 if c_ari2 == 1
-		
-		if inlist(name,"Afghanistan2015") {
-			global h32 "h32a h32b h32c h32d h32e h32f h32g h32j h32l h32s h32t h32w"
-		}
-		if inlist(name,"Myanmar2015") {
-			global h32 "h32a h32b h32c h32d h32e h32f h32g h32j h32l h32m  h32p h32q h32r h32v"
-		}      
-		if inlist(name,"Angola2015") {
-			global h32 "h32a h32b h32c h32d h32e h32j h32m"
-		}  
-		if inlist(name,"Ethiopia2016") {
-			global h32 "h32a h32b h32c h32d h32e h32f h32g h32j h32l h32m h32w"
-		}
-		if inlist(name,"Malawi2015") {
-			global h32 "h32a h32b h32c h32d h32e h32j h32l h32m h32n h32o h32p h32q"
-		}
-		if inlist(name,"Uganda2016") {
-			global h32 "h32a h32b h32c h32d h32j h32l h32m h32n"
-		}
-		if inlist(name,"Armenia2015") {
-			global h32 "h32a h32b h32e h32f h32g h32l h32q"
-		}
-		if inlist(name,"Tanzania2015") {
-			global h32 "h32a h32b h32c h32d h32e h32f h32g h32h h32j h32l h32m h32n h32o h32p h32q h32t h32u"
-		}
-		if inlist(name,"Albania2017") {
-			global h32 "h32a h32b h32c h32d h32f h32g h32h h32j h32l h32n h32o h32p h32q "
-		}
-		if inlist(name,"Nepal2016") {
-			global h32 "h32a h32b h32c h32d h32e h32j h32l h32s h32u "
-		} // fchv include or not??
-		if inlist(name,"Haiti2016") {
-			global h32 "h32a h32b h32c h32d h32e h32f h32j h32l h32m h32n h32o"
-		}
-		if inlist(name,"Indonesia2017") {
-			global h32 "h32a h32b h32c h32d h32e h32g h32h h32j h32l h32m h32n h32o h32p"
-		} // not sure about the private general practitioner h12l
-		if inlist(name,"Jordan2017") {
-			global h32 "h32a h32b h32c h32d h32e h32j h32l h32m h32n"
-		} 
-		
-		foreach var in $h32 {
-			replace c_treatARI = 1 if c_treatARI == 0 & `var' == 1 
-			replace c_treatARI = . if `var' == .
-			
-			replace c_treatARI2 = 1 if c_treatARI2 == 0 & `var' == 1 
-			replace c_treatARI2 = . if `var' == .
-		}
-*/
-	
 
-//drop  c_treatARI c_treatARI2
-		foreach var of varlist h32a h32b h32c h32d h32e h32f h32g h32h h32i h32j h32k h32l ///
-        h32m h32n h32o h32p h32q h32r h32s h32t h32u h32v h32w h32x {
+     	gen c_treatARI= 0 if c_ari == 1
+        gen c_treatARI2= 0 if c_ari2 == 1	
+        
+	    order h32a-h32x,sequential	
+		
+if ~inlist(name,"Benin2017") {
+		foreach var of varlist h32a-h32x {
                  local lab: variable label `var' 
-        replace `var' = 0 if ///   
-		regexm("`lab'","(other|shop|pharmacy|market|kiosk|relative|friend|church|drug|addo|hilot|traditional|cs private medical|cs public sector)") ///
-                 & !regexm("`lab'","(ngo|hospital|medical center|traditional practioner$)")  
+        replace `var' = 0 if ///   				 
+		regexm("`lab'","(other|shop|pharmacy|market|kiosk|relative|friend|church|drug|addo|hilot|traditional|cs private medical|cs public sector|no treatment)") ///
+                 & !regexm("`lab'","(ngo|hospital|medical center|traditional practioner$|sub health center|health center|aid post|trained vhv and other government|maternity home|diagnostic center|wome('s|n's) consultation|(pol|po)yclinic|fap|emergency services|ambulatory/family doctor office)")  
                  /* do not consider formal if contain words in the first group but don't contain any words in the second group */
        }
-       order h32*,sequential
-       egen pro2 = rowtotal(h32a-h32x)
+       egen pro_ari = rowtotal(h32a-h32x)
 
-       gen c_treatARI = 0 if c_ari == 1
-       replace c_treatARI = 1 if c_treatARI == 0 & pro2 >= 1 
-       replace c_treatARI = . if pro2 == . 
-
-	   gen c_treatARI2 = 0 if c_ari2 == 1
-       replace c_treatARI2 = 1 if c_treatARI2 == 0 & pro2 >= 1 
-       replace c_treatARI2 = . if pro2 == . 
-	
-
-*c_fevertreat	Child with fever symptoms seen by formal provider
-/* 
- gen c_fevertreat = 0 if c_fever == 1
-		foreach var in $h32 {
-			replace c_fevertreat = 1 if c_fevertreat == 0 & `var' == 1
-			replace c_fevertreat = . if `var' == 9 
+		foreach var of varlist c_treatARI c_treatARI2 {
+        replace `var' = 1 if `var' == 0 & pro_ari >= 1 
+        replace `var'  = . if pro_ari == . 	
 		}
-*/		
+}
+		
+		if inlist(name,"Benin2017") {
+			global h32 "h32a h32b h32c h32d h32e h32f h32g h32j h32l h32m h32n h32o "
+		} 	
+		foreach var in $h32 {
+			replace c_treatARI = 1 if c_treatARI == 0 & `var' == 1 
+			replace c_treatARI = . if `var' == 9
+			
+			replace c_treatARI2 = 1 if c_treatARI2 == 0 & `var' == 1 
+			replace c_treatARI2 = . if `var' == 9
+		}
 
-		gen c_fevertreat = 0 if c_fever == 1
-		replace c_fevertreat = 1 if c_fevertreat == 0 & pro2 >= 1
-		replace c_fevertreat = . if pro2 == .
+		
+*c_fevertreat	Child with fever symptoms seen by formal provider	
+
+        if inlist(name,"Benin2017") {
+	       gen c_fevertreat = 0 if c_fever == 1
+			   foreach var in $h32 {
+						replace c_fevertreat = 1 if c_fevertreat == 0 & `var' == 1
+						replace c_fevertreat = . if `var' == . 
+					}
+	}	
+		if ~inlist(name,"Benin2017") {
+			gen c_fevertreat = 0 if c_fever == 1
+				replace c_fevertreat = 1 if c_fevertreat == 0 & pro_ari >= 1
+				replace c_fevertreat = . if pro_ari == .
+	}	
 		
 
 		

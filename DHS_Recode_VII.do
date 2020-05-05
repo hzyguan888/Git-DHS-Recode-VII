@@ -31,13 +31,13 @@ global OUT "${root}/STATA/DATA/SC/FINAL"
 global INTER "${root}/STATA/DATA/SC/INTER"
 
 * Define path for do-files
-global DO "${root}/STATA/DO/SC/DHS/Recode VII"
+global DO "${root}/STATA/DO/SC/DHS/Recode VII/Git-DHS-Recode-VII"
 
 * Define the country names (in globals) in by Recode
     /*
 	do "${DO}/0_GLOBAL.do"
 	*/
-global DHScountries_Recode_VII "Uganda2016"  //run with Afghanistan2015 as test.
+global DHScountries_Recode_VII "Mali2018"  //run with Afghanistan2015 as test.
 
 foreach name in $DHScountries_Recode_VII{	
 
@@ -92,6 +92,7 @@ gen name = "`name'"
     do "${DO}/4_sexual_health"
     do "${DO}/5_woman_anthropometrics"
     do "${DO}/16_woman_cancer"
+	//do "${DO}/17_woman_cancer_age_ref.do"
 *housekeeping for ind data
 
     *hm_dob	date of birth (cmc)
@@ -101,7 +102,7 @@ gen name = "`name'"
 keep v001 v002 v003 w_* hm_*
 rename (v001 v002 v003) (hv001 hv002 hvidx)
 save `ind' 
-
+/*
 ******************************
 *****domains using men data***
 ******************************
@@ -114,7 +115,7 @@ gen name = "`name'"
 keep mv001 mv002 mv003 hm_*
 rename (mv001 mv002 mv003) (hv001 hv002 hvidx)
 save `men'
-
+*/
 
 ************************************
 *****domains using hm level data****
@@ -182,7 +183,7 @@ use `hm',clear
 	replace hm_live = 0 if _merge == 2 | inlist(hm_headrel,.,12,98)
 	drop _merge
     merge m:m hv001 hv002 hvidx using `ind',nogen update
-	merge m:m hv001 hv002 hvidx using `men',nogen update
+//	merge m:m hv001 hv002 hvidx using `men',nogen update
 	merge m:m hv001 hv002       using `hh',nogen update
 
     tab hh_urban,mi  //check whether all hh member + dead child + child lives outside hh assinged hh info
@@ -199,6 +200,7 @@ use `hm',clear
 
 *** Quality Control: Validate with DHS official data
     gen surveyid = iso2c+year+"DHS"
+
 	preserve 
 	do "${DO}/Quality_control"
 	save "${INTER}/quality_control-`name'.dta",replace

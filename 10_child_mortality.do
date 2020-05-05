@@ -25,11 +25,3 @@
 	
 *mor_afl				Child age at death imputation flag
     gen mor_afl = b13
-	
-
-
-*******compare with statacompiler
-preserve
-keep if inrange(hm_age_mon,0,59) 
-restore
-

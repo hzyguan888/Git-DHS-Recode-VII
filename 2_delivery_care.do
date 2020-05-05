@@ -17,9 +17,9 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 	local lab: variable label `var' 
 
     replace `var' = . if  ///
-	!regexm("`lab'","(doctor|nurse|midwife|aide soignante|assistante accoucheuse|clinical officer|mch aide|trained|auxiliary birth attendant|physician assistant|professional|ferdsher|skilled|community health care provider|birth attendant|hospital/health center worker|hew|auxiliary|icds|feldsher|mch|vhw|village health team|health personnel|gynecolog(ist|y)|obstetrician|internist|pediatrician|family welfare visitor|medical assistant|health assistant)") ///
-	|regexm("`lab'","(na^|-na|traditional birth attendant|untrained|unquallified|empirical midwife)")  
-
+	!regexm("`lab'","trained") & (!regexm("`lab'","doctor|nurse|midwife|mifwife|aide soignante|assistante accoucheuse|clinical officer|mch aide|auxiliary birth attendant|physician assistant|professional|ferdsher|feldshare|skilled|community health care provider|birth attendant|hospital/health center worker|hew|auxiliary|icds|feldsher|mch|vhw|village health team|health personnel|gynecolog(ist|y)|obstetrician|internist|pediatrician|family welfare visitor|medical assistant|health assistant|general practitioner|matron") ///
+	|regexm("`lab'","na^|-na|traditional birth attendant|untrained|unquallified|empirical midwife|box"))
+	
 	replace `var' = . if !inlist(`var',0,1)
 	
 	 }
@@ -30,33 +30,28 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 
 
 	*c_hospdel: child born in hospital of births in last 2 years
-	if inlist(name, "Afghanistan2015") {
-		gen c_hospdel= ( inlist(m15,21,41) ) if   !mi(m15)        
-	}
-	if inlist(name, "Myanmar2015","Ethiopia2016","Malawi2015","Uganda2016","Armenia2015","Albania2017","Nepal2016","Indonesia2017") {
-		gen c_hospdel= ( inlist(m15,21,31) ) if   !mi(m15)   
-	}
-	if inlist(name, "Angola2015") {
-		gen c_hospdel= ( inlist(m15,21,22,23,31) ) if   !mi(m15)   
-	}
-	if inlist(name, "Tanzania2015") {
-		gen c_hospdel= ( inlist(m15,21,22,23,24,31,32,33,41,42) ) if   !mi(m15)  
-	}
-	if inlist(name, "Haiti2016") {
-		gen c_hospdel= ( inlist(m15,21,23,24,26,31,33) ) if   !mi(m15)  
-	}
-	if inlist(name, "Jordan2017") {
-		gen c_hospdel= ( inlist(m15,21,23,31,32) ) if   !mi(m15)  
-	}
 
+	decode m15, gen(m15_lab)
+	replace m15_lab = lower(m15_lab)
+	
+	gen c_hospdel = 0 if !mi(m15)
+	replace c_hospdel = 1 if ///
+    regexm(m15_lab,"medical college|surgical") | ///
+	regexm(m15_lab,"hospital") & !regexm(m15_lab,"center|sub-center|post|clinic")
+	replace c_hospdel = . if mi(m15) | m15 == 99 | mi(m15_lab)	
+	// please check this indicator in case it's country specific
+/*	
+	if inlist(name, "Benin2017") {
+		replace c_hospdel= ( inlist(m15,21,31,32) ) if   !mi(m15)   
+	}
+*/
 	*c_facdel: child born in formal health facility of births in last 2 years
 	
-	if ~inlist(name, "Tanzania2015","Haiti2016") {
-			gen c_facdel = ( !inlist(m15,11,12,26,36,46,96) ) if   !mi(m15)   
-	}
-	if inlist(name, "Tanzania2015","Haiti2016") {
-			gen c_facdel = ( !inlist(m15,11,12,96) ) if   !mi(m15)
-	}
+	gen c_facdel = 0 if !mi(m15)
+	replace c_facdel = 1 if regexm(m15_lab,"hospital|maternity|health center|dispensary") | ///
+	!regexm(m15_lab,"home|other private|other$|pharmacy|non medical|private nurse|religious|abroad|india|other public|tba")
+	replace c_facdel = . if mi(m15) | m15 == 99 | mi(m15_lab)
+
 	*c_earlybreast: child breastfed within 1 hours of birth of births in last 2 years
 
 	gen c_earlybreast = .
@@ -65,57 +60,10 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 	replace c_earlybreast = 1 if inlist(m34,0,100)
 	replace c_earlybreast = . if inlist(m34,199,299)
 	
-	/*
-	gen c_earlybreast = (inlist(m34,0,100)) 
-	replace c_earlybreast = . if inlist(m34,199,299,.) 
-	*/
-	
     *c_skin2skin: child placed on mother's bare skin immediately after birth of births in last 2 years
 	gen c_skin2skin = (m77 == 1) if    !inlist(m77,.,8)               //though missing but still a place holder.(the code might change depends on how missing represented in surveys)
 	
 	*c_sba: Skilled birth attendance of births in last 2 years: go to report to verify how "skilled is defined"
-	/*
-	if inlist(name, "Afghanistan2015","Myanmar2015","Angola2015","Armenia2015") {
-		gen c_sba = 0
-		replace c_sba = 1 if (m3a==1 | m3b==1 | m3c==1 ) 
-		replace c_sba = . if m3a==. | m3b==. | m3c==.
-	}
-	if inlist(name, "Ethiopia2016") {
-		gen c_sba = 0
-		replace c_sba = 1 if (m3a==1 | m3b==1 | m3c==1 | m3d==1 | m3e==1) 
-		replace c_sba = . if m3a==. | m3b==. | m3c==. | m3d==. | m3e==. 
-	}
-	if inlist(name, "Malawi2015","Jordan2017") {
-		gen c_sba = 0
-		replace c_sba = 1 if (m3a==1 | m3b==1 ) 
-		replace c_sba = . if m3a==. | m3b==.
-	}
-	if inlist(name, "Uganda2016","Haiti2016") {
-		gen c_sba = 0
-		replace c_sba = 1 if (m3a==1 | m3b==1 | m3c==1 | m3d==1) 
-		replace c_sba = . if m3a==. | m3b==. | m3c==. | m3d==.  
-	}
-	if inlist(name, "Albania2017") {
-		gen c_sba = 0
-		replace c_sba = 1 if (m3a==1 | m3b==1 | m3d==1) 
-		replace c_sba = . if m3a==. | m3b==. | m3d==. 
-	}
-	if inlist(name, "Tanzania2015") {
-		gen c_sba = 0
-		replace c_sba = 1 if (m3a==1 | m3b==1 | m3c==1 | m3g==1 | m3h==1 | m3i==1) 
-		replace c_sba = . if m3a==. | m3b==. | m3c==. | m3g==. | m3h==. | m3i==.  
-	}
-	if inlist(name, "Nepal2016") {
-		gen c_sba = 0
-		replace c_sba = 1 if (m3a==1 | m3b==1 | m3d==1 | m3e==1) 
-		replace c_sba = . if m3a==. | m3b==. | m3d==. | m3e==.
-	}
-	if inlist(name, "Indonesia2017") {
-		gen c_sba = 0
-		replace c_sba = 1 if (m3a==1 | m3b==1 | m3c==1 | m3d==1 | m3e==1) 
-		replace c_sba = . if m3a==. | m3b==. | m3c==. | m3d==. | m3e==.
-	}
-*/
 
 	gen c_sba = . 
 
