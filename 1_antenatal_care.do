@@ -5,7 +5,7 @@
 
 	*c_anc: 4+ antenatal care visits of births in last 2 years	
 	gen c_anc = (inrange(m14,4,20)) if m14<=20                                                //Last pregnancies in last 2 years of women currently aged 15-49	
-	
+
 	*c_anc_any: any antenatal care visits of births in last 2 years
 	gen c_anc_any = .
 
@@ -33,13 +33,13 @@
 	 
 	 *anc_skill: Categories as skilled: doctor, nurse, midwife, auxiliary nurse/midwife...
 
-	foreach var of varlist m2a-m2n {
+	foreach var of varlist m2a-m2m {
 
 	local lab: variable label `var' 
 
     replace `var' = . if ///
-	!regexm("`lab'","trained") & (!regexm("`lab'","doctor|nurse|midwife|mifwife|aide soignante|assistante accoucheuse|clinical officer|mch aide|auxiliary birth attendant|physician assistant|professional|ferdsher|feldshare|skilled|community health care provider|birth attendant|hospital/health center worker|hew|auxiliary|icds|feldsher|mch|vhw|village health team|health personnel|gynecolog(ist|y)|obstetrician|internist|pediatrician|family welfare visitor|medical assistant|health assistant|matron|general practitioner") ///
-	|regexm("`lab'","na^|-na|traditional birth attendant|untrained|unquallified|empirical midwife|box"))
+	!regexm("`lab'","trained") & (!regexm("`lab'","doctor|nurse|midwife|mifwife|aide soignante|assistante accoucheuse|clinical officer|mch aide|auxiliary birth attendant|physician assistant|professional|ferdsher|feldshare|skilled|community health care provider|birth attendant|hospital/health center worker|hew|auxiliary|icds|feldsher|mch|vhw|village health team|health personnel|gynecolog(ist|y)|obstetrician|internist|pediatrician|family welfare visitor|medical assistant|health assistant|matron|general practitioner|health officer|extension|ob-gy") ///
+	|regexm("`lab'","na^|-na|traditional birth attendant|untrained|unquallified|empirical midwife|box|community|village birth attendant"))
 
 	replace `var' = . if !inlist(`var',0,1)
 
@@ -51,7 +51,7 @@
 
 	/* do consider as skilled if contain words in the first group but don't contain any words in the second group */
 
-    egen anc_skill = rowtotal(m2a-m2n),mi
+    egen anc_skill = rowtotal(m2a-m2m),mi
 	
 	*c_anc_eff: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples) of births in last 2 years
 
@@ -91,36 +91,42 @@
 
 
 	*c_anc_bp_q: Blood pressure measured during pregnancy among ANC users of births in last 2 years
-	gen c_anc_bp_q = (m42c==1) if c_anc_any == 1 & !mi(m42c)
+	gen c_anc_bp_q = (c_anc_bp==1) if c_anc_any == 1 
+	replace c_anc_bp_q = . if mi(c_anc_bp) & c_anc_any == 1
 	
 	*c_anc_bs: Blood sample taken during pregnancy of births in last 2 years
-	//gen c_anc_bs = (m42e==1) if !mi(m42e)
 	gen c_anc_bs = .
 	
 	replace c_anc_bs = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
 	replace c_anc_bs = 1 if m42e==1
 	
 	*c_anc_bs_q: Blood sample taken during pregnancy among ANC users of births in last 2 years
-	gen c_anc_bs_q = (m42e==1) if c_anc_any == 1 & !mi(m42e)
+	gen c_anc_bs_q = (c_anc_bs==1) if c_anc_any == 1 
+	replace c_anc_bs_q = . if c_anc_bs == . & c_anc_any == 1
 	
 	*c_anc_ur: Urine sample taken during pregnancy of births in last 2 years
-	//gen c_anc_ur = (m42d==1) if !mi(m42d)
 	gen c_anc_ur = .
 	
 	replace c_anc_ur = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
 	replace c_anc_ur = 1 if m42d==1
 	
 	*c_anc_ur_q: Urine sample taken during pregnancy among ANC users of births in last 2 years
-	gen c_anc_ur_q = (m42d==1) if c_anc_any == 1 & !mi(m42d)
+	gen c_anc_ur_q = (c_anc_ur==1) if c_anc_any == 1 
+	replace c_anc_ur_q = . if mi(c_anc_ur) & c_anc_any == 1 
 	
 	*c_anc_ir: iron supplements taken during pregnancy of births in last 2 years
-	egen anc_ir = rowtotal(m45 h42),mi
-	gen c_anc_ir = inrange(anc_ir,1,2) if  !mi(anc_ir)
+	//egen anc_ir = rowtotal(m45 h42),mi
+	//gen c_anc_ir = inrange(anc_ir,1,2) if  !mi(anc_ir)
 	//replace c_anc_ir = . if m45 == 8 | h42 == 8
+	
+	clonevar c_anc_ir = m45
+	replace c_anc_ir = . if m45 == 8
 	
 	*c_anc_ir_q: iron supplements taken during pregnancy among ANC users of births in last 2 years
 
-	gen c_anc_ir_q = (anc_ir > 0 ) if c_anc_any == 1 & !mi(anc_ir)
+	//gen c_anc_ir_q = (anc_ir > 0 ) if c_anc_any == 1 & !mi(anc_ir)
+	gen c_anc_ir_q = (c_anc_ir==1) if c_anc_any == 1 
+	replace c_anc_ir_q = . if mi(c_anc_ir) & c_anc_any == 1 
 	
 	*c_anc_tet: pregnant women vaccinated against tetanus for last birth in last 2 years
 	    
