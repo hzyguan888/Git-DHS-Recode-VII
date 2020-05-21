@@ -40,14 +40,14 @@ if _rc==0 {
 
 
 *Add reference period.
-gen w_papsmear_ref = .
+gen w_papsmear_ref = ""
 
 if inlist(name, "Jordan2017") {
 	replace w_papsmear_ref = "ever"
 }
 
 
-gen w_mammogram_ref = .
+gen w_mammogram_ref = ""
 
 if inlist(name, "Jordan2017") {
 	replace w_mammogram_ref = "ever"
@@ -61,13 +61,13 @@ if inlist(name, "Jordan2017") {
 
 * Add Age Group.
 
-gen w_mammogram_age = .
+gen w_mammogram_age = ""
 
 if inlist(name, "Jordan2017") {
 	replace w_mammogram_age = "20-49"
 }
 
-gen w_papsmear_age = .
+gen w_papsmear_age = ""
 
 if inlist(name, "Jordan2017") {
 	replace w_papsmear_age = "20-49"
