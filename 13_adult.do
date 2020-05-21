@@ -14,6 +14,13 @@ capture confirm variabel sh246s sh255s sh264s sh246d sh255d sh264d
 		replace a_inpatient_1y = sh17f
 		replace a_inpatient_1y = . if a_inpatient_1y == 8
 	}
+	if inlist(name, "Philippines2017") {
+		replace a_inpatient_1y = 0 if hv105 >= 18
+		replace a_inpatient_1y = 1 if a_inpatient_1y == 0 & !inlist(sh222a,.,0)
+		replace a_inpatient_1y = . if sh220 == 8 | sh222a == 0
+		// exclude the person who is deceased or no longer in the household, report p.346
+	}
+	
 *a_bp_treat	18y + being treated for high blood pressure 
     gen a_bp_treat = . 
 	
@@ -23,19 +30,29 @@ capture confirm variabel sh246s sh255s sh264s sh246d sh255d sh264d
 	replace a_bp_treat=1 if sh250==1 
 	}
 	
+	if inlist(name,"SouthAfrica2016") {
+	replace a_bp_treat=0 if sh224!=. | sh324!=.
+	replace a_bp_treat=1 if sh224==1 | sh324==1
+	}
+	
 *a_bp_sys 18y+ systolic blood pressure (mmHg) in adult population 
-    gen  a_bp_sys = . 
-	capture confirm variabel sh246s sh255s sh264s
-	if _rc == 0 {
-	egen a_bp_sys = rowmean(sh246s sh255s sh264s)
+  
+	if inlist(name,"SouthAfrica2016") {
+	egen a_bp_sys = rowmean(sh221a sh228a sh232a sh321a sh328a sh332a)
+	}
+	if ~inlist(name,"SouthAfrica2016") {
+	gen a_bp_sys = .
 	}
 	
 *a_bp_dial	18y+ diastolic blood pressure (mmHg) in adult population 
-    gen a_bp_dial = .
-	capture confirm variabel sh246d sh255d sh264d
-	if _rc == 0 {
-	egen a_bp_dial = rowmean(sh246d sh255d sh264d)
+
+	if inlist(name,"SouthAfrica2016") {
+	egen a_bp_dial = rowmean(sh221b sh228b sh232b sh321b sh328b sh332b)
 	}
+	if ~inlist(name,"SouthAfrica2016") {
+	gen a_bp_dial = .
+	}
+	
 *a_hi_bp140_or_on_med	18y+ with high blood pressure or on treatment for high blood pressure	
 	gen a_hi_bp140=.
     replace a_hi_bp140=1 if a_bp_sys>=140 | a_bp_dial>=90 
