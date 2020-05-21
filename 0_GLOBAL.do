@@ -29,16 +29,17 @@ global DHScountries_Recode_VII
  Myanmar2015       
  Nepal2016         
  Nigeria2018       
- PapuaNewGuinea2016
+ PapuaNewGuinea2017
  Philippines2017   
  Senegal2017       
  SouthAfrica2016   
  Tajikistan2017    
  Tanzania2015      
- Timor2016         
+ Timor-Leste2016         
  Uganda2016        
  Zambia2018        
  Zimbabwe2015 
+ 
 ";
 #delimit cr
 
