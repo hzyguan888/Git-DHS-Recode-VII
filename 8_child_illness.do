@@ -21,38 +21,50 @@
 		replace c_diarrhea_hmf=. if h14  ==8|h14  ==9 | h14  ==. 
 		
 *c_diarrhea_pro	The treatment was provided by a formal provider (all public provider except other public, pharmacy, and private sector)
-	
+
+if ~inlist(name,"Philippines2017") {
 		foreach var of varlist h12a-h12x {
                  local lab: variable label `var' 
-        replace `var' = 0 if ///
+        replace `var' = . if ///
                  regexm("`lab'","(other|shop|pharmacy|market|kiosk|relative|friend|church|drug|addo|hilot|traditional|cs private medical|cs public sector|no treatment)") ///
                  & !regexm("`lab'","(ngo|hospital|medical center|traditional practioner$|sub health center|health center|aid post|trained vhv and other government|maternity home|diagnostic center|wome('s|n's) consultation|(pol|po)yclinic|fap|emergency services|ambulatory/family doctor office)")  
+				  replace `var' = . if !inlist(`var',0,1) 
 				 			 
 /* do not consider formal if contain words in 
                  the first group but don't contain any words in the second group */
        }
-       order h12*,sequential
-       egen pro = rowtotal(h12a-h12x)
+        order h12*,sequential
+        egen pro_dia = rowtotal(h12a-h12x),mi
 
-       gen c_diarrhea_pro = 0 if c_diarrhea == 1
-       replace c_diarrhea_pro = 1 if pro >= 1 
-       replace c_diarrhea_pro = . if pro == . 
-    	
-		
+        gen c_diarrhea_pro = 0 if c_diarrhea == 1
+        replace c_diarrhea_pro = 1 if pro_dia >= 1 
+        replace c_diarrhea_pro = . if pro_dia == . 
+}    	
+
+if inlist(name,"Philippines2017") {		
+		if inlist(name,"Philippines2017") {
+			global h12 "h12a h12b h12c h12d h12j h12l"	
+		}
+			gen c_diarrhea_pro = 0 if c_diarrhea == 1
+			foreach var in $h12 {
+				replace c_diarrhea_pro = 1 if c_diarrhea_pro == 0 & `var' == 1 
+				replace c_diarrhea_pro = . if `var' == 8 
+			}
+}
 *c_diarrhea_mof	Child with diarrhea received more fluids
         gen c_diarrhea_mof = (h38 == 5) if !inlist(h38,.,8) & c_diarrhea == 1
 
 *c_diarrhea_medfor Get formal medicine except (ors hmf home other_med, country specific). 
-        egen medfor = rowtotal(h12z h15 h15a h15b h15c h15e h15g h15h h15i),mi
+        egen medfor = rowtotal(h12z h15 h15a h15b h15c h15e h15g h15h h15i h15j),mi
 		gen c_diarrhea_medfor = ( medfor > = 1 ) if c_diarrhea == 1
 		// formal medicine don't include "home remedy, herbal medicine and other"
 		replace c_diarrhea_medfor = . if h12z == 8 | h15 == 8 | h15a == 8 | h15b == 8 | h15c == 8 | h15e == 8  | h15g == 8 | h15h == 8 | h15i == 8			 
 	
 					 
 *c_diarrhea_med	Child with diarrhea received any medicine other than ORS or hmf (country specific)
-        egen med = rowtotal(h12z h15 h15a h15b h15c h15d h15e h15f h15g h15h h15i),mi
+        egen med = rowtotal(h12z h15 h15a h15b h15c h15d h15e h15f h15g h15h h15i h15j),mi
 		gen c_diarrhea_med = ( med > = 1 ) if c_diarrhea == 1
-		replace c_diarrhea_med = . if h12z == 8 | h15 == 8 | h15a == 8 | h15b == 8 | h15c == 8 | h15d == 8 | h15e == 8 | h15f == 8 | h15g == 8 | h15h == 8 | h15i == 8
+		replace c_diarrhea_med = . if h12z == 8 | h15 == 8 | h15a == 8 | h15b == 8 | h15c == 8 | h15d == 8 | h15e == 8 | h15f == 8 | h15g == 8 | h15h == 8 | h15i == 8 | h15j == 8
 		
 		
 *c_diarrheaact	Child with diarrhea seen by provider OR given any form of formal treatment
@@ -106,12 +118,13 @@
 if ~inlist(name,"Benin2017") {
 		foreach var of varlist h32a-h32x {
                  local lab: variable label `var' 
-        replace `var' = 0 if ///   				 
+        replace `var' = . if ///   				 
 		regexm("`lab'","(other|shop|pharmacy|market|kiosk|relative|friend|church|drug|addo|hilot|traditional|cs private medical|cs public sector|no treatment)") ///
                  & !regexm("`lab'","(ngo|hospital|medical center|traditional practioner$|sub health center|health center|aid post|trained vhv and other government|maternity home|diagnostic center|wome('s|n's) consultation|(pol|po)yclinic|fap|emergency services|ambulatory/family doctor office)")  
+		replace `var' = . if !inlist(`var',0,1)
                  /* do not consider formal if contain words in the first group but don't contain any words in the second group */
        }
-       egen pro_ari = rowtotal(h32a-h32x)
+       egen pro_ari = rowtotal(h32a-h32x),mi
 
 		foreach var of varlist c_treatARI c_treatARI2 {
         replace `var' = 1 if `var' == 0 & pro_ari >= 1 
@@ -120,16 +133,15 @@ if ~inlist(name,"Benin2017") {
 }
 		
 		if inlist(name,"Benin2017") {
-			global h32 "h32a h32b h32c h32d h32e h32f h32g h32j h32l h32m h32n h32o "
-		} 	
-		foreach var in $h32 {
-			replace c_treatARI = 1 if c_treatARI == 0 & `var' == 1 
-			replace c_treatARI = . if `var' == 9
-			
-			replace c_treatARI2 = 1 if c_treatARI2 == 0 & `var' == 1 
-			replace c_treatARI2 = . if `var' == 9
+			global h32 "h32a h32b h32c h32d h32e h32f h32g h32j h32l h32m h32n h32o "	
+			foreach var in $h32 {
+				replace c_treatARI = 1 if c_treatARI == 0 & `var' == 1 
+				replace c_treatARI = . if `var' == 9
+				
+				replace c_treatARI2 = 1 if c_treatARI2 == 0 & `var' == 1 
+				replace c_treatARI2 = . if `var' == 9
+			}
 		}
-
 		
 *c_fevertreat	Child with fever symptoms seen by formal provider	
 
@@ -137,7 +149,7 @@ if ~inlist(name,"Benin2017") {
 	       gen c_fevertreat = 0 if c_fever == 1
 			   foreach var in $h32 {
 						replace c_fevertreat = 1 if c_fevertreat == 0 & `var' == 1
-						replace c_fevertreat = . if `var' == . 
+						replace c_fevertreat = . if `var' == 9 
 					}
 	}	
 		if ~inlist(name,"Benin2017") {
