@@ -17,13 +17,19 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 	local lab: variable label `var' 
 
     replace `var' = . if  ///
-	!regexm("`lab'","trained") & (!regexm("`lab'","doctor|nurse|midwife|mifwife|aide soignante|assistante accoucheuse|clinical officer|mch aide|auxiliary birth attendant|physician assistant|professional|ferdsher|feldshare|skilled|community health care provider|birth attendant|hospital/health center worker|hew|auxiliary|icds|feldsher|mch|vhw|village health team|health personnel|gynecolog(ist|y)|obstetrician|internist|pediatrician|family welfare visitor|medical assistant|health assistant|general practitioner|matron") ///
-	|regexm("`lab'","na^|-na|traditional birth attendant|untrained|unquallified|empirical midwife|box"))
+	!regexm("`lab'","trained") & (!regexm("`lab'","doctor|nurse|midwife|mifwife|aide soignante|assistante accoucheuse|clinical officer|mch aide|auxiliary birth attendant|physician assistant|professional|ferdsher|feldshare|skilled|community health care provider|birth attendant|hospital/health center worker|hew|auxiliary|icds|feldsher|mch|vhw|village health team|health personnel|gynecolog(ist|y)|obstetrician|internist|pediatrician|family welfare visitor|medical assistant|health assistant|general practitioner|matron|health officer|extension|ob-gy") ///
+	|regexm("`lab'","na^|-na|traditional birth attendant|untrained|unquallified|empirical midwife|box|community|village birth attendant"))
 	
 	replace `var' = . if !inlist(`var',0,1)
 	
 	 }
-
+	/*if inlist(name, "PapuaNewGuinea2017") {
+		replace m3g = .
+	}
+	*/
+	if inlist(name, "Senegal2017") {
+		replace m3h = .
+	}
 	/* do consider as skilled if contain words in the first group but don't contain any words in the second group */
 
     egen sba_skill = rowtotal(m3a-m3n),mi
@@ -37,21 +43,28 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 	gen c_hospdel = 0 if !mi(m15)
 	replace c_hospdel = 1 if ///
     regexm(m15_lab,"medical college|surgical") | ///
-	regexm(m15_lab,"hospital") & !regexm(m15_lab,"center|sub-center|post|clinic")
+	regexm(m15_lab,"hospital") & !regexm(m15_lab,"sub-center")
 	replace c_hospdel = . if mi(m15) | m15 == 99 | mi(m15_lab)	
 	// please check this indicator in case it's country specific
-/*	
+
 	if inlist(name, "Benin2017") {
-		replace c_hospdel= ( inlist(m15,21,31,32) ) if   !mi(m15)   
+		replace c_hospdel= ( inlist(m15,21,31,32) ) if !mi(m15)   
 	}
-*/
+	/*
+	if inlist(name, "Indonesia2017") {
+		gen c_hospdel= ( inlist(m15,31) ) if !mi(m15)   
+	}
+	*/
+	 //replace c_hospdel = . if !(inrange(hm_age_mon,0,23)& bidx ==1)
+	 
 	*c_facdel: child born in formal health facility of births in last 2 years
 	
 	gen c_facdel = 0 if !mi(m15)
 	replace c_facdel = 1 if regexm(m15_lab,"hospital|maternity|health center|dispensary") | ///
 	!regexm(m15_lab,"home|other private|other$|pharmacy|non medical|private nurse|religious|abroad|india|other public|tba")
 	replace c_facdel = . if mi(m15) | m15 == 99 | mi(m15_lab)
-
+	// replace c_facdel = . if !(inrange(hm_age_mon,0,23)& bidx ==1)
+	
 	*c_earlybreast: child breastfed within 1 hours of birth of births in last 2 years
 
 	gen c_earlybreast = .
@@ -59,7 +72,7 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 	replace c_earlybreast = 0 if m4 != .    //  based on Last born children who were ever breastfed
 	replace c_earlybreast = 1 if inlist(m34,0,100)
 	replace c_earlybreast = . if inlist(m34,199,299)
-	
+
     *c_skin2skin: child placed on mother's bare skin immediately after birth of births in last 2 years
 	gen c_skin2skin = (m77 == 1) if    !inlist(m77,.,8)               //though missing but still a place holder.(the code might change depends on how missing represented in surveys)
 	
@@ -78,6 +91,7 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 	
 	*c_caesarean: Last birth in last 2 years delivered through caesarean                    
 	clonevar c_caesarean = m17
+	replace c_caesarean = . if m17 == 8
 	
     *c_sba_eff1: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth)
     //gen stay = (inrange(m61,124,161)|inrange(m61,201,240)|inrange(m61,301,308))
