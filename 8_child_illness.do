@@ -166,15 +166,19 @@ if ~inlist(name,"Benin2017") {
 		
 		gen c_illness2 = (c_diarrhea == 1 | c_ari2 == 1 | c_fever == 1) 
 		replace c_illness2 =. if c_diarrhea == . | c_ari2 == . | c_fever == .
+		//replace c_illness = . if !inrange(hm_age_mon,0,59)
 		
 		
 *c_illtreat/c_illtreat2 	Child with any illness symptoms taken to formal provider
         gen c_illtreat = (c_fevertreat == 1 | c_diarrhea_pro == 1 | c_treatARI == 1) if c_illness == 1
-		replace c_illtreat = . if c_fevertreat == . | c_diarrhea_pro == . | c_treatARI == .
+		replace c_illtreat = . if c_illness == 1 & c_fevertreat == . & c_diarrhea_pro == . & c_treatARI == .
 		
         gen c_illtreat2 = (c_fevertreat == 1 | c_diarrhea_pro == 1 | c_treatARI2 == 1) if c_illness == 1
-		replace c_illtreat2 = . if c_fevertreat == . | c_diarrhea_pro == . | c_treatARI2 == .
+		replace c_illtreat2 = . if c_illness == 1 & c_fevertreat == . & c_diarrhea_pro == . & c_treatARI2 == .
 
+		
+		//gen c_illtreat = (pro_ari >= 1 | pro_dia >= 1) if c_illness == 1
+		//replace c_illtreat = . if pro_ari == . & pro_dia == . 
 
 
 
