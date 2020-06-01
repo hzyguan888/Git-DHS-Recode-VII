@@ -35,13 +35,10 @@ preserve
 	replace c_earlybreast = . if !(inrange(hm_age_mon,0,23)& bidx==1)
 
 	foreach var of var c_sba c_sba_eff1	c_sba_eff1_q	c_sba_eff2 ///
-	c_sba_eff2_q	c_sba_q	{
+	c_sba_eff2_q	c_sba_q	 c_caesarean  c_facdel {
 	replace `var' = . if !(inrange(hm_age_mon,0,59) & hm_live ==1)
 	}
-	
-	foreach var of var c_caesarean c_facdel {
-	replace `var' = . if !(inrange(hm_age_mon,0,59))
-	}
+
 
 ***for variables generated from 4_sexual_health 5_woman_anthropometrics
 	foreach var of var w_CPR w_unmet_fp	w_need_fp w_metany_fp	w_metmod_fp w_metany_fp_q  w_bmi_1549 w_height_1549 w_obese_1549 w_overweight_1549 {
