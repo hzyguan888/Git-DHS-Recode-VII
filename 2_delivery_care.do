@@ -23,10 +23,6 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 	replace `var' = . if !inlist(`var',0,1)
 	
 	 }
-	/*if inlist(name, "PapuaNewGuinea2017") {
-		replace m3g = .
-	}
-	*/
 	if inlist(name, "Senegal2017") {
 		replace m3h = .
 	}
@@ -34,7 +30,7 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 		replace m3d = .  // Nepal doesn't include health assistant in the report.
 	}
 	/* do consider as skilled if contain words in the first group but don't contain any words in the second group */
-    replace m3d = .
+
 	egen sba_skill = rowtotal(m3a-m3n),mi
 
 	*c_hospdel: child born in hospital of births in last 2 years
@@ -52,11 +48,6 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 	if inlist(name, "Benin2017") {
 		replace c_hospdel= ( inlist(m15,21,31,32) ) if !mi(m15)   
 	}
-	/*
-	if inlist(name, "Indonesia2017") {
-		gen c_hospdel= ( inlist(m15,31) ) if !mi(m15)   
-	}
-	*/
 	 //replace c_hospdel = . if !(inrange(hm_age_mon,0,23)& bidx ==1)
 	 
 	*c_facdel: child born in formal health facility of births in last 2 years
@@ -71,10 +62,16 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 
 	gen c_earlybreast = .
 	
-	replace c_earlybreast = 0 if m4 != .    //  based on Last born children who were ever breastfed
+	replace c_earlybreast = 0 if m4 != .     //  based on Last born children who were ever breastfed
 	replace c_earlybreast = 1 if inlist(m34,0,100)
 	replace c_earlybreast = . if inlist(m34,199,299)
-
+	replace c_earlybreast = . if !inlist(m4,.,94) & m34 == .
+	
+	/*or:
+	gen c_earlybreast  = inlist(m34,0,100) if !inlist(m34,199,299,.) & m4 !=. // code . if m34 or m4 missing
+	replace c_earlybreast = 0 if m4 ==94  // code 0 if no breastfeeding
+    */
+	
     *c_skin2skin: child placed on mother's bare skin immediately after birth of births in last 2 years
 	gen c_skin2skin = (m77 == 1) if    !inlist(m77,.,8)               //though missing but still a place holder.(the code might change depends on how missing represented in surveys)
 	
@@ -107,21 +104,15 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 	
 	
 	*c_sba_eff1_q: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth) among those with any SBA
-	//gen c_sba_eff1_q = (c_facdel==1 & c_sba == 1 & stay==1 & c_earlybreast == 1) if c_sba == 1	
-	//replace c_sba_eff1_q = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
-	gen c_sba_eff1_q = c_sba_eff1
-	replace c_sba_eff1_q = . if c_sba == 0 | c_sba == .
+	gen c_sba_eff1_q = c_sba_eff1 if c_sba == 1
 		
 	*c_sba_eff2: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth, skin2skin contact)
 	gen c_sba_eff2 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1 & c_skin2skin == 1) 
 	replace c_sba_eff2 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . | c_skin2skin == .
 	
 	*c_sba_eff2_q: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth, skin2skin contact) among those with any SBA
-	//gen c_sba_eff2_q = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1 & c_skin2skin == 1) if c_sba == 1	
-	//replace c_sba_eff2_q = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . | c_skin2skin == .
 	
-	gen c_sba_eff2_q = c_sba_eff2
-	replace c_sba_eff2_q = . if c_sba == 0 | c_sba == .
+	gen c_sba_eff2_q =  c_sba_eff2 if c_sba == 1
 
 
 	
