@@ -10,10 +10,6 @@ capture confirm variabel sh246s sh255s sh264s sh246d sh255d sh264d
 *a_inpatient_1y	18y+ household member hospitalized in last 12 months (1/0)
     gen a_inpatient_1y = . 
 	
-	if inlist(name, "Albania2017") {
-		replace a_inpatient_1y = sh17f
-		replace a_inpatient_1y = . if a_inpatient_1y == 8
-	}
 	if inlist(name, "Philippines2017") {
 		replace a_inpatient_1y = 0 if hv105 >= 18
 		replace a_inpatient_1y = 1 if a_inpatient_1y == 0 & !inlist(sh222a,.,0)
