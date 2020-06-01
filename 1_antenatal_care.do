@@ -7,11 +7,7 @@
 	gen c_anc = (inrange(m14,4,20)) if m14<=20                                                //Last pregnancies in last 2 years of women currently aged 15-49	
 
 	*c_anc_any: any antenatal care visits of births in last 2 years
-	gen c_anc_any = .
-
-	replace c_anc_any = 1 if inrange(m14,1,20)
-
-	replace c_anc_any = 0 if m14 == 0
+	gen c_anc_any = (inrange(m14,1,20)) if m14<=20
 	
 	*c_anc_ear: First antenatal care visit in first trimester of pregnancy of births in last 2 years
 	//gen c_anc_ear = (inrange(m13,0,3)) if  m13<=10
@@ -24,11 +20,7 @@
 
 	
 	*c_anc_ear_q: First antenatal care visit in first trimester of pregnancy among ANC users of births in last 2 years
-	gen c_anc_ear_q = .
-
-	replace c_anc_ear_q = 1 if c_anc_ear == 1 & c_anc_any == 1
-
-	replace c_anc_ear_q = 0 if c_anc_ear == 0 & c_anc_any == 1
+	gen c_anc_ear_q = c_anc_ear if c_anc_any==1
 	
 	 
 	 *anc_skill: Categories as skilled: doctor, nurse, midwife, auxiliary nurse/midwife...
@@ -66,9 +58,7 @@
 	replace c_anc_ski = 0 if anc_skill == 0
 	
 	*c_anc_ski_q: antenatal care visit with skilled provider among ANC users for pregnancy of births in last 2 years
-	gen c_anc_ski_q = (c_anc_ski == 1) if c_anc_any == 1 
-
-	replace c_anc_ski_q = . if mi(c_anc_ski) & c_anc_any == 1
+	gen c_anc_ski_q = c_anc_ski if c_anc_any == 1 
 	
 	*c_anc_bp: Blood pressure measured during pregnancy of births in last 2 years
 	// gen c_anc_bp = (m42c==1) if !mi(m42c)
@@ -80,8 +70,9 @@
 
 
 	*c_anc_bp_q: Blood pressure measured during pregnancy among ANC users of births in last 2 years
-	gen c_anc_bp_q = (c_anc_bp==1) if c_anc_any == 1 
-	replace c_anc_bp_q = . if mi(c_anc_bp) & c_anc_any == 1
+	//gen c_anc_bp_q = (c_anc_bp==1) if c_anc_any == 1 
+	//replace c_anc_bp_q = . if mi(c_anc_bp) & c_anc_any == 1
+	gen c_anc_bp_q = c_anc_bp if c_anc_any==1 
 	
 	*c_anc_bs: Blood sample taken during pregnancy of births in last 2 years
 	gen c_anc_bs = .
@@ -90,8 +81,7 @@
 	replace c_anc_bs = 1 if m42e==1
 	
 	*c_anc_bs_q: Blood sample taken during pregnancy among ANC users of births in last 2 years
-	gen c_anc_bs_q = (c_anc_bs==1) if c_anc_any == 1 
-	replace c_anc_bs_q = . if c_anc_bs == . & c_anc_any == 1
+	gen c_anc_bs_q = c_anc_bs if c_anc_any==1 
 	
 	*c_anc_ur: Urine sample taken during pregnancy of births in last 2 years
 	gen c_anc_ur = .
@@ -100,22 +90,17 @@
 	replace c_anc_ur = 1 if m42d==1
 	
 	*c_anc_ur_q: Urine sample taken during pregnancy among ANC users of births in last 2 years
-	gen c_anc_ur_q = (c_anc_ur==1) if c_anc_any == 1 
-	replace c_anc_ur_q = . if mi(c_anc_ur) & c_anc_any == 1 
+	gen c_anc_ur_q = c_anc_ur if c_anc_any==1
 	
-	*c_anc_ir: iron supplements taken during pregnancy of births in last 2 years
-	//egen anc_ir = rowtotal(m45 h42),mi
-	//gen c_anc_ir = inrange(anc_ir,1,2) if  !mi(anc_ir)
-	//replace c_anc_ir = . if m45 == 8 | h42 == 8
-	
+	*c_anc_ir: iron supplements taken during pregnancy of births in last 2 years	
 	clonevar c_anc_ir = m45
 	replace c_anc_ir = . if m45 == 8
 	
 	*c_anc_ir_q: iron supplements taken during pregnancy among ANC users of births in last 2 years
 
 	//gen c_anc_ir_q = (anc_ir > 0 ) if c_anc_any == 1 & !mi(anc_ir)
-	gen c_anc_ir_q = (c_anc_ir==1) if c_anc_any == 1 
-	replace c_anc_ir_q = . if mi(c_anc_ir) & c_anc_any == 1 
+	gen c_anc_ir_q = c_anc_ir if c_anc_any==1
+
 	
 	*c_anc_tet: pregnant women vaccinated against tetanus for last birth in last 2 years
 	    
@@ -169,8 +154,6 @@
 	replace c_anc_eff2 = . if c_anc == . | anc_skill == . |  rh_anc_neotet == . | anc_blood == .
 	
 	*c_anc_eff2_q: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples, tetanus vaccination) among ANC users of births in last 2 years
-	/*gen c_anc_eff2_q = (c_anc == 1 & anc_skill>0 & anc_blood == 3 & rh_anc_neotet == 1) if c_anc_any == 1
-	replace c_anc_eff2_q = . if c_anc == . | anc_skill == . | rh_anc_neotet == .*/
 	
 	gen c_anc_eff2_q = c_anc_eff2 if c_anc_any == 1
 	
