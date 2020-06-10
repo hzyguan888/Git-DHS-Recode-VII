@@ -34,13 +34,13 @@ global INTER "${root}/STATA/DATA/SC/INTER"
 global DO "${root}/STATA/DO/SC/DHS/Recode VII/Git-DHS-Recode-VII"
 
 * Define the country names (in globals) in by Recode
-    /*
+    
 	do "${DO}/0_GLOBAL.do"
-	*/
-global DHScountries_Recode_VII "Mali2018"  //run with Afghanistan2015 as test.
+	
+// global DHScountries_Recode_VII "Jordan2017"  //run with Afghanistan2015 as test.$DHScountries_Recode_VII
 
-foreach name in $DHScountries_Recode_VII{	
-
+foreach name in $DHScountries_Recode_VII {	
+clear
 tempfile birth ind men hm hiv hh iso
 
 ******************************
@@ -170,13 +170,14 @@ save `hh'
 use "${SOURCE}/external/iso", clear 
 keep country iso2c iso3c	
 replace country = "Tanzania"  if country == "Tanzania, United Republic of"
+replace country = "PapuaNewGuinea" if country == "Papua New Guinea"
 
 save `iso'
 
 ***merge all subset of microdata
 use `hm',clear
 
-    merge 1:m hv001 hv002 hvidx using `birth',update              //missing update is zero, non missing conflict for all matched.(hvidx different) 
+    merge 1:m hv001 hv002 hvidx using `birth',update      //missing update is zero, non missing conflict for all matched.(hvidx different) 
     replace hm_headrel = 99 if _merge == 2
 	label define hm_headrel_lab 99 "dead/no longer in the household"
 	label values hm_headrel hm_headrel_lab
@@ -193,6 +194,8 @@ use `hm',clear
 	gen year = real(substr("`name'",-4,.))
 	tostring(year),replace
     gen country = regexs(0) if regexm("`name'","([a-zA-Z]+)")
+	replace country = "South Africa" if country == "SouthAfrica"
+	replace country = "Timor-Leste" if country == "Timor"
 	
     merge m:1 country using `iso',force
     drop if _merge == 2
@@ -240,6 +243,7 @@ use `hm',clear
 	foreach var of var c_underweight c_stunted	hc70 hc71 ant_sampleweight{
     replace `var' = . if !inrange(hm_age_mon,0,59)
     }
+	
 	***for hive indicators from 12_hiv
     foreach var of var a_hiv*{
     replace `var'=. if hm_age_yrs<15 | (hm_age_yrs>49 & hm_age_yrs!=.)

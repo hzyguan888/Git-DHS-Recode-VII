@@ -16,7 +16,7 @@ gen miss_m = 1 if r(percent) == 1
 *recall period by country*
 **************************
 *tag the micro-data accordingly for w_papsmear reference period
-replace w_papsmear_ref  = "3yr" if miss_p != 1
+replace w_papsmear_ref  = "3yr" if miss_p ! = 1
 
 if inlist(name,"DominicanRepublic1996","DominicanRepublic1999","DominicanRepublic2002","DominicanRepublic2007","Nicaragua1998","Nicaragua2001") {
 replace w_papsmear_ref  = "1yr" if country_year=="`y'"

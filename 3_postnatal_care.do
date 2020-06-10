@@ -22,11 +22,7 @@
 
 		replace `var'_skill = . if mi(`var') | `var' == 99
 		}
-	if inlist(name,"Afghanistan2015") {
-		gen c_pnc_any = 0 if !mi(m70) | !mi(m50) 
-        replace c_pnc_any = 1 if (m71 <= 306 & inrange(m72,11,13) ) | (m51 <= 306 & inrange(m52,10,13) )
-		replace c_pnc_any = . if inlist(m71,199,299,399,998)| inlist(m51,998)| m72 == 8 | m52 == 8
-	}
+
 	/* consider as skilled if contain words in the first group but don't contain any words in the second group */
 		
 	gen c_pnc_any = .
@@ -64,9 +60,7 @@
 	}  
 	
 	*c_pnc_eff_q: mother AND child in first 24h by skilled health worker among those with any PNC
-	gen c_pnc_eff_q = c_pnc_eff
-	replace c_pnc_eff_q = . if c_pnc_any == 0
-	replace c_pnc_eff_q = . if c_pnc_any == . | c_pnc_eff == .
+	gen c_pnc_eff_q = c_pnc_eff if c_pnc_any == 1
 	
 	
 	*c_pnc_eff2: mother AND child in first 24h by skilled health worker and cord check, temperature check and breastfeeding counselling within first two days
@@ -80,9 +74,7 @@
 	
     *c_pnc_eff2_q: mother AND child in first 24h weeks by skilled health worker and cord check, temperature check and breastfeeding counselling within first two days among those with any PNC
 	
-	gen c_pnc_eff2_q = c_pnc_eff2
-	replace c_pnc_eff2_q = . if c_pnc_any == 0
-	replace c_pnc_eff2_q = . if c_pnc_any == . | c_pnc_eff2 == .
+	gen c_pnc_eff2_q = c_pnc_eff2 if c_pnc_any ==1
 			
 		
 

@@ -5,7 +5,7 @@
 
 *w_bmi_1549	15-49y woman's BMI      
 	foreach var of varlist v437 v438 {
-	replace `var'=. if `var'==9999
+	replace `var'=. if `var'==9994
 	}
 	replace v437=v437/10
 	replace v438=v438/1000
@@ -26,15 +26,13 @@
 *w_overweight_1549	15-49 woman's BMI>25 (1/0)  
 	gen w_overweight_1549=1 if w_bmi_1549>=25
 	replace w_overweight_1549=0 if w_bmi_1549<25
-	replace w_overweight_1549=. if w_bmi_1549==.
-	
+	replace w_overweight_1549=. if w_bmi_1549==. 
 	
 *w_obese_1549	15-49y woman's BMI>=30 (1/0)  	
 	gen w_obese_1549=1 if w_bmi_1549>=30
 	replace w_obese_1549=0 if w_bmi_1549<30
 	replace w_obese_1549=. if w_bmi_1549==.
 	
-	rename v437 wweight
 
 *w_height_1549	15-49y woman's height in meters
 	rename v438 w_height_1549  
