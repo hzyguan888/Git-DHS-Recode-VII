@@ -131,9 +131,9 @@ keep hv001 hv002 hvidx hc70 hc71 ///
 c_* ant_* a_* hm_* ln
 save `hm'
 
-capture confirm file "${SOURCE}/DHS/DHS-`name'/DHS-`name'hiv.dta"
+capture confirm file "${SOURCE}/DHS-`name'/DHS-`name'hiv.dta"
  if _rc==0 {
-    use "${SOURCE}/DHS/DHS-`name'/DHS-`name'hiv.dta", clear
+    use "${SOURCE}/DHS-`name'/DHS-`name'hiv.dta", clear
     do "${DO}/12_hiv"
  }
  if _rc!= 0 {
@@ -178,6 +178,8 @@ save `iso'
 use `hm',clear
 
     merge 1:m hv001 hv002 hvidx using `birth',update      //missing update is zero, non missing conflict for all matched.(hvidx different) 
+	bysort hv001 hv002: egen min = min(w_sampleweight)
+	replace w_sampleweight = min if w_sampleweight ==.
     replace hm_headrel = 99 if _merge == 2
 	label define hm_headrel_lab 99 "dead/no longer in the household"
 	label values hm_headrel hm_headrel_lab
@@ -207,6 +209,9 @@ use `hm',clear
 	preserve 
 	do "${DO}/Quality_control"
 	save "${INTER}/quality_control-`name'.dta",replace
+	cd "${INTER}"
+	do "${DO}/Quality_control_result"
+	save "${OUT}/quality_control",replace 
     restore
 
 *** Specify sample size to HEFPI
