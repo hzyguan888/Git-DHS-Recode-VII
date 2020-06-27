@@ -2,11 +2,10 @@
 *** adult***********
 ********************
 
-capture confirm variabel sh246s sh255s sh264s sh246d sh255d sh264d
-	if _rc == 0 {
-    replace `var' =. if `var'>900
-	}
-
+foreach k in sh246s sh255s sh264s sh246d sh255d sh264d sh221a sh228a sh232a sh321a sh328a sh332a sh221b sh228b sh232b sh321b sh328b sh332b {
+	cap replace `k' =. if `k'>900
+}
+	
 *a_inpatient_1y	18y+ household member hospitalized in last 12 months (1/0)
     gen a_inpatient_1y = . 
 	
