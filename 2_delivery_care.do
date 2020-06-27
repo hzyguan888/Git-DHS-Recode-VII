@@ -10,7 +10,7 @@ destring year, replace
 gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 
 
- *sba_skill (not nailed down yet, need check the result)
+ *sba_skill (not nailed down yet, need check the result and update key words accordingly.)
 
 	foreach var of varlist m3a-m3n {
 
@@ -48,7 +48,6 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 	if inlist(name, "Benin2017") {
 		replace c_hospdel= ( inlist(m15,21,31,32) ) if !mi(m15)   
 	}
-	 //replace c_hospdel = . if !(inrange(hm_age_mon,0,23)& bidx ==1)
 	 
 	*c_facdel: child born in formal health facility of births in last 2 years
 	
@@ -56,21 +55,20 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 	replace c_facdel = 1 if regexm(m15_lab,"hospital|maternity|health center|dispensary") | ///
 	!regexm(m15_lab,"home|other private|other$|pharmacy|non medical|private nurse|religious|abroad|india|other public|tba")
 	replace c_facdel = . if mi(m15) | m15 == 99 | mi(m15_lab)
-	// replace c_facdel = . if !(inrange(hm_age_mon,0,23)& bidx ==1)
+
 	
 	*c_earlybreast: child breastfed within 1 hours of birth of births in last 2 years
-
+	
 	gen c_earlybreast = .
 	
 	replace c_earlybreast = 0 if m4 != .     //  based on Last born children who were ever breastfed
 	replace c_earlybreast = 1 if inlist(m34,0,100)
 	replace c_earlybreast = . if inlist(m34,199,299)
-	replace c_earlybreast = . if !inlist(m4,.,94) & m34 == .
-	
-	/*or:
-	gen c_earlybreast  = inlist(m34,0,100) if !inlist(m34,199,299,.) & m4 !=. // code . if m34 or m4 missing
+
+/*	or:
+	gen c_earlybreast  = inlist(m34,0,100) if !inlist(m34,199,299,.)  // code . if m34 or m4 missing
 	replace c_earlybreast = 0 if m4 ==94  // code 0 if no breastfeeding
-    */
+*/  
 	
     *c_skin2skin: child placed on mother's bare skin immediately after birth of births in last 2 years
 	gen c_skin2skin = (m77 == 1) if    !inlist(m77,.,8)               //though missing but still a place holder.(the code might change depends on how missing represented in surveys)
@@ -99,10 +97,7 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 	replace stay = . if inlist(m61,199,299,998) // filter question, based on m15
 	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
 	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
-	
-	//replace  c_sba_eff1 = . if !(inrange(hm_age_mon,0,23)& bidx ==1)
-	
-	
+		
 	*c_sba_eff1_q: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth) among those with any SBA
 	gen c_sba_eff1_q = c_sba_eff1 if c_sba == 1
 		

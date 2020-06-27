@@ -99,15 +99,10 @@ if inlist(name,"Philippines2017","Ethiopia2016","Haiti2016") {
 		replace c_sevdiarrheatreat = . if c_sevdiarrhea == . | c_diarrhea_pro == .
 		
 *c_sevdiarrheatreat_q	IV (intravenous) treatment of severe diarrhea among children with any formal provider visits
-        gen iv = (h15c == 1) if !inlist(h15,.,8) & c_diarrhea == 1
+        gen iv = (h15c == 1) if !inlist(h15c,.,8) & c_diarrhea == 1
 		gen c_sevdiarrheatreat_q = (iv ==1 ) if c_sevdiarrheatreat == 1
 		
 *c_ari	Children under 5 with cough and rapid breathing in the two weeks preceding the survey which originated from the chest.	
-		/*
-		gen c_ari=1 if inlist(h31c,1,3) & ccough == 1 & h31b == 1            
-		replace c_ari=0 if h31b==0 | ccough == 0
-		replace c_ari=. if h31b == 8
-		*/
 		recode h31b h31c h31 (8 9 =.)
 		gen c_ari = (inlist(h31c,1,3) & ccough == 1 & h31b == 1) 
 		replace c_ari=. if h31b == . | ccough == .

@@ -75,13 +75,4 @@
     *c_pnc_eff2_q: mother AND child in first 24h weeks by skilled health worker and cord check, temperature check and breastfeeding counselling within first two days among those with any PNC
 	
 	gen c_pnc_eff2_q = c_pnc_eff2 if c_pnc_any ==1
-			
 		
-
-
-	
-*******compare with statacompiler
-preserve
-keep if inrange(hm_age_mon,0,59)
-restore
-
