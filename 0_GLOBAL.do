@@ -16,7 +16,8 @@ global DHScountries_Recode_VII
  Angola2015        
  Armenia2015       
  Benin2017         
- Burundi2016       
+ Burundi2016   
+ Cameroon2018
  Colombia2015      
  Ethiopia2016      
  Guinea2018        
