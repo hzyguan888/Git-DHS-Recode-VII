@@ -10,8 +10,6 @@
 	gen c_anc_any = (inrange(m14,1,20)) if m14<=20
 	
 	*c_anc_ear: First antenatal care visit in first trimester of pregnancy of births in last 2 years
-	//gen c_anc_ear = (inrange(m13,0,3)) if  m13<=10
-	
 	gen c_anc_ear = .
 	
 	replace c_anc_ear = 0 if m2n != .    // m13 based on Women who had seen someone for antenatal care for their last born child
@@ -44,8 +42,7 @@
 	}
 	if inlist(name,"Nepal2016") {
 		replace m2d = .  // Nepal doesn't include health assistant in the report.
-	}
-	
+	}	
 	/* do consider as skilled if contain words in the first group but don't contain any words in the second group */
 
     egen anc_skill = rowtotal(m2a-m2m),mi
@@ -61,8 +58,6 @@
 	gen c_anc_ski_q = c_anc_ski if c_anc_any == 1 
 	
 	*c_anc_bp: Blood pressure measured during pregnancy of births in last 2 years
-	// gen c_anc_bp = (m42c==1) if !mi(m42c)
-	
 	gen c_anc_bp = .
 	
 	replace c_anc_bp = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
@@ -70,8 +65,6 @@
 
 
 	*c_anc_bp_q: Blood pressure measured during pregnancy among ANC users of births in last 2 years
-	//gen c_anc_bp_q = (c_anc_bp==1) if c_anc_any == 1 
-	//replace c_anc_bp_q = . if mi(c_anc_bp) & c_anc_any == 1
 	gen c_anc_bp_q = c_anc_bp if c_anc_any==1 
 	
 	*c_anc_bs: Blood sample taken during pregnancy of births in last 2 years
@@ -97,8 +90,6 @@
 	replace c_anc_ir = . if m45 == 8
 	
 	*c_anc_ir_q: iron supplements taken during pregnancy among ANC users of births in last 2 years
-
-	//gen c_anc_ir_q = (anc_ir > 0 ) if c_anc_any == 1 & !mi(anc_ir)
 	gen c_anc_ir_q = c_anc_ir if c_anc_any==1
 
 	
@@ -142,12 +133,10 @@
 	
 	gen c_anc_eff = (c_anc == 1 & anc_skill>0 & anc_blood == 3) 
 	replace c_anc_eff = . if c_anc ==. |  anc_skill==. | anc_blood == .
-	//replace c_anc_eff = . if !(inrange(hm_age_mon,0,23)& bidx ==1)
 	
 	*c_anc_eff_q: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples) among ANC users of births in last 2 years
 
 	gen c_anc_eff_q = c_anc_eff if c_anc_any == 1
-	
 	
 	*c_anc_eff2: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples, tetanus vaccination) of births in last 2 years
 	gen c_anc_eff2 = (c_anc == 1 & anc_skill>0 & anc_blood == 3 & rh_anc_neotet == 1) 
@@ -166,5 +155,6 @@
 	gen c_anc_eff3_q = c_anc_eff3 if c_anc_any == 1
 	
 
-
+	*w_sampleweight.
+	gen w_sampleweight = v005/10e6
 
