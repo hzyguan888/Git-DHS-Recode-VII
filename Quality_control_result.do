@@ -13,4 +13,4 @@ foreach f in `r(files)' {
 }
 
 keep if flag_dhs == 1| flag_hefpi == 1
-br if flag_dhs == 1
+//br if flag_dhs == 1
