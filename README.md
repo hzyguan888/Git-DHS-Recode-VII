@@ -9,7 +9,6 @@ We use R/STATA to scrape labels from RAW Data and produce a classification excel
 And also need to update general codes when new surveys come out.
 
 ### New Surveys come out:
-Use 
-
+Use Git-DHS-Recode-VII/Quality/DHS_API_2_2.0.R to update DHS.dta for comparative analysis
 
 Thanks!
