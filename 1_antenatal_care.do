@@ -12,7 +12,7 @@
 	*c_anc_ear: First antenatal care visit in first trimester of pregnancy of births in last 2 years
 	gen c_anc_ear = .
 	
-	replace c_anc_ear = 0 if m2n != .    // m13 based on Women who had seen someone for antenatal care for their last born child
+	replace c_anc_ear = 0 if m2n == 0    // m13 based on Women who had seen someone for antenatal care for their last born child
 	replace c_anc_ear = 1 if inrange(m13,0,3)
 	replace c_anc_ear = . if m13 == 98 
 
@@ -60,7 +60,7 @@
 	*c_anc_bp: Blood pressure measured during pregnancy of births in last 2 years
 	gen c_anc_bp = .
 	
-	replace c_anc_bp = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
+	replace c_anc_bp = 0 if m2n == 0    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
 	replace c_anc_bp = 1 if m42c==1
 
 
@@ -70,7 +70,7 @@
 	*c_anc_bs: Blood sample taken during pregnancy of births in last 2 years
 	gen c_anc_bs = .
 	
-	replace c_anc_bs = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
+	replace c_anc_bs = 0 if m2n == 0    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
 	replace c_anc_bs = 1 if m42e==1
 	
 	*c_anc_bs_q: Blood sample taken during pregnancy among ANC users of births in last 2 years
@@ -79,7 +79,7 @@
 	*c_anc_ur: Urine sample taken during pregnancy of births in last 2 years
 	gen c_anc_ur = .
 	
-	replace c_anc_ur = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
+	replace c_anc_ur = 0 if m2n == 0    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
 	replace c_anc_ur = 1 if m42d==1
 	
 	*c_anc_ur_q: Urine sample taken during pregnancy among ANC users of births in last 2 years
@@ -129,7 +129,7 @@
 	
 	*c_anc_eff: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples) of births in last 2 years
 	
-	egen anc_blood = rowtotal(m42c m42d m42e) if m2n != .
+	egen anc_blood = rowtotal(m42c m42d m42e) if m2n == 0
 	
 	gen c_anc_eff = (c_anc == 1 & anc_skill>0 & anc_blood == 3) 
 	replace c_anc_eff = . if c_anc ==. |  anc_skill==. | anc_blood == .
