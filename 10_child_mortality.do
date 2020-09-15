@@ -4,7 +4,7 @@
 ******************************   
 
 *mor_dob				Child date of birth (cmc)
-    gen mor_dob = v011
+    gen mor_dob = b3
 	
 *mor_wln				Woman line number in HH to match child with mother (original)
     gen mor_wln = v003
