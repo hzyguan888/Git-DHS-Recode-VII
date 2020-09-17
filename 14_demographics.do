@@ -20,7 +20,7 @@
 	clonevar hm_headrel = hv101
 	
 *hm_stay Stayed in the HH the night before the survey (1/0)
-    gen hm_stay = .  //vary by survey
+    clonevar hm_stay = hv103 if inlist(hv103,0,1) //vary by survey, afg is missing.
 	
 *hm_dob	date of birth (cmc)
     gen hm_dob = hc32  //
