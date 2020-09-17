@@ -12,7 +12,7 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 
  *sba_skill (not nailed down yet, need check the result and update key words accordingly.)
 
-	foreach var of varlist m3a-m3n {
+	foreach var of varlist m3a-m3m {
 
 	local lab: variable label `var' 
 
@@ -31,7 +31,7 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 	}
 	/* do consider as skilled if contain words in the first group but don't contain any words in the second group */
 
-	egen sba_skill = rowtotal(m3a-m3n),mi
+	egen sba_skill = rowtotal(m3a-m3m),mi
 
 	*c_hospdel: child born in hospital of births in last 2 years
 
@@ -59,11 +59,11 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 	
 	*c_earlybreast: child breastfed within 1 hours of birth of births in last 2 years
 	
-	gen c_earlybreast = .
-	
-	replace c_earlybreast = 0 if m4 != .     //  based on Last born children who were ever breastfed
-	replace c_earlybreast = 1 if inlist(m34,0,100)
-	replace c_earlybreast = . if inlist(m34,199,299)
+	gen c_earlybreast = 0
+
+	replace c_earlybreast  = 1 if inlist(m34,0,100)
+	replace c_earlybreast  = . if inlist(m34,199,999)
+	replace c_earlybreast  = . if m34 ==. & m4 != 94
 
 /*	or:
 	gen c_earlybreast  = inlist(m34,0,100) if !inlist(m34,199,299,.)  // code . if m34 or m4 missing
@@ -77,7 +77,7 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 
 	gen c_sba = . 
 
-	replace c_sba = 1 if sba_skill>=1 
+	replace c_sba = 1 if sba_skill>=1  & sba_skill!=.
 
 	replace c_sba = 0 if sba_skill==0 
 
@@ -94,7 +94,7 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
   
 	gen stay = 0 if m15 != .
 	replace stay = 1 if stay == 0 & (inrange(m61,124,198)|inrange(m61,201,298)|inrange(m61,301,398))
-	replace stay = . if inlist(m61,199,299,998) // filter question, based on m15
+	replace stay = . if inlist(m61,199,299,998)  & !inlist(m15,11,12,96) // filter question, based on m15
 	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
 	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
 		
