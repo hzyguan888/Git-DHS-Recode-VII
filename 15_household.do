@@ -7,7 +7,9 @@
     gen hh_id = hhid
 	
 *hh_headed	Head's highest educational attainment (1 = none, 2 = primary, 3 = lower sec or higher)
-    recode hv106 (0 = 1) (1 = 2) (2/3 = 3) (8=.) if hv101 == 1,gen(hh_headed)
+    recode hv106 (0 = 1) (1 = 2) (2/3 = 3) (8=.) if hv101 == 1,gen(headed)
+    bysort hh_id: egen hh_headed = mean(headed)
+
 
 * hh_country_code Country code
 	clonevar hh_country_code = hv000 
