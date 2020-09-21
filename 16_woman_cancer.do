@@ -40,15 +40,13 @@ if _rc==0 {
 
 
 
-* SouthAfrica2016 
-
-
 if inlist(name,"SouthAfrica2016") {
 	tempfile tpf1
 	drop w_papsmear
 	preserve
 		use "${SOURCE}/DHS-SouthAfrica2016/DHS-SouthAfrica2016wm.dta", clear	
-		gen w_papsmear = s1407 if !inlist(s1407,.,8) // period: 3yr, 4-5, 6-10, >10 
+		gen w_papsmear = s1407 if !inlist(s1407,.,8)  
+		replace w_papsmear = 0 if w_papsmear==1 & s1408!=1  // period: 3yr
 		replace w_papsmear=. if !inrange(v012,20,49)
 		keep w_* caseid
 		sort caseid
@@ -59,7 +57,6 @@ if inlist(name,"SouthAfrica2016") {
 	tab _m
 	drop if _m ==2 // for _m ==2, variables necessary for 4.do and 5.do are all missing
 	drop _m
-
 }
 
 
@@ -72,6 +69,9 @@ if inlist(name, "Jordan2017") {
 	replace w_mammogram_ref = "ever"
 }
 
+if inlist(name, "SouthAfrica2016") {
+	replace w_papsmear_ref = "3yr"
+}
 
 //if not in adeptfile, please generate value, otherwise keep it missing. 
 
@@ -88,6 +88,9 @@ if inlist(name, "Jordan2017") {
 	replace w_papsmear_age = "20-49"
 }
 
+if inlist(name, "SouthAfrica2016") {
+	replace w_papsmear_age = "20-49"
+}
 
 
 //if not in adeptfile, please generate value, otherwise keep it missing. 
