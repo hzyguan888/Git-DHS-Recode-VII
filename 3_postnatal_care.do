@@ -27,35 +27,35 @@
 		
 	gen c_pnc_any = .
 		replace c_pnc_any = 0 if m62 != . | m66 != . | m70 != . | m74 != .
-		replace c_pnc_any = 1 if (m63 <= 306 & m64_skill == 1) | (m67 <= 306 & m68_skill == 1) | (m71 <= 306 & m72_skill == 1) | (m75 <= 306 & m76_skill == 1)
-		replace c_pnc_any = . if inlist(m63,199,299,399,998) | inlist(m67,199,299,399,998) | inlist(m71,199,299,399,998) | inlist(m75,199,299,399,998) | m62 == 8 | m66 == 8 | m70 == 8 | m74 == 8
+		replace c_pnc_any = 1 if ((m63 <= 242 | inrange(m63,301,306) | m63 == 299 ) & m64_skill == 1) | ((m67 <= 242 | inrange(m67,301,306) | m67 == 299 ) & m68_skill == 1) | ((m71 <= 242 | inrange(m71,301,306) | m71 == 299 ) & m72_skill == 1) | ((m75 <= 242 | inrange(m75,301,306) | m75 == 299 ) & m76_skill == 1)
+		replace c_pnc_any = . if inlist(m63,399,998) | inlist(m67,399,998) | inlist(m71,399,998) | inlist(m75,399,998) | m62 == 8 | m66 == 8 | m70 == 8 | m74 == 8
 	
 	
 	gen c_pnc_eff = .
 		
 		replace c_pnc_eff = 0 if m62 != . | m66 != . | m70 != . | m74 != .
-		replace c_pnc_eff = 1 if (((inrange(m63,100,124) | m63 == 201 ) & m64_skill == 1) | ((inrange(m67,100,124) | m67 == 201) & m68_skill == 1)) & (((inrange(m71,100,124) | m71 == 201) & m72_skill == 1) | ((inrange(m75,100,124) | m75 == 201) & m76_skill == 1))
-		replace c_pnc_eff = . if inlist(m63,199,299,399,998) | inlist(m67,199,299,399,998) | inlist(m71,199,299,399,998) | inlist(m75,199,299,399,998) | m62 == 8 | m66 == 8 | m70 == 8 | m74 == 8
+		replace c_pnc_eff = 1 if (((inrange(m63,100,124) | m63 == 201| m63 == 199 ) & m64_skill == 1) | ((inrange(m67,100,124) | m67 == 201| m67 == 199) & m68_skill == 1)) & (((inrange(m71,100,124) | m71 == 201| m71 == 199) & m72_skill == 1) | ((inrange(m75,100,124) | m75 == 201| m75 == 199) & m76_skill == 1))
+		replace c_pnc_eff = . if inlist(m63,299,399,998) | inlist(m67,299,399,998) | inlist(m71,299,399,998) | inlist(m75,299,399,998) | m62 == 8 | m66 == 8 | m70 == 8 | m74 == 8
 	}
 	
 	if inlist(name,"Afghanistan2015") {
 		gen c_pnc_any = 0 if m70 != . | m50 != . 
-        replace c_pnc_any = 1 if (m71 <= 306 & inrange(m72,11,13) ) | (m51 <= 306 & inrange(m52,11,13) )
-		replace c_pnc_any = . if inlist(m71,199,299,399,998)| inlist(m51,998)| m72 == 8 | m52 == 8
+        replace c_pnc_any = 1 if ((m71 <= 242 | inrange(m71,301,306) | m71 == 299 )& inrange(m72,11,13) ) | ((m51 <= 242 | inrange(m51,301,306) | m51 == 299 ) & inrange(m52,11,13) )
+		replace c_pnc_any = . if inlist(m71,399,998)| inlist(m51,998)| m72 == 8 | m52 == 8
 		
 		gen c_pnc_eff = 0 if m70 != . | m50 != . 
-		replace c_pnc_eff = 1 if (((inrange(m71,100,124) | m71 == 201 ) & inrange(m72,11,13)) & ((inrange(m51,100,124) | m51 == 201) & inrange(m52,11,13))) 
-		replace c_pnc_eff = . if inlist(m71,199,299,399,998)| inlist(m51,998)| m72 == 8 | m52 == 8
+		replace c_pnc_eff = 1 if (((inrange(m71,100,124) | m71 == 201| m71 == 199 ) & inrange(m72,11,13)) & ((inrange(m51,100,124) | m51 == 201) & inrange(m52,11,13))) 
+		replace c_pnc_eff = . if inlist(m71,299,399,998)| inlist(m51,998)| m72 == 8 | m52 == 8
 	}
 	
 	if inlist(name,"Myanmar2015") {
 		gen c_pnc_any = 0 if m62 != . | m66 != . | m70 != . 
-		replace c_pnc_any = 1 if (m63 <= 306 & inrange(m64,11,13)) | (m67 <= 306 & inrange(m68,11,13)) | (m71 <= 306 & inrange(m72,11,13))
-		replace c_pnc_any = . if inlist(m63,199,299,399,998) | inlist(m67,199,299,399,998) | inlist(m71,199,299,399,998) | inlist(m75,199,299,399,998) | m62 == 8 | m66 == 8 | m70 == 8 
+		replace c_pnc_any = 1 if ((m63 <= 242 | inrange(m63,301,306) | m63 == 299 ) & inrange(m64,11,13)) | ((m67 <= 242 | inrange(m67,301,306) | m67 == 299 ) & inrange(m68,11,13)) | ((m71 <= 242 | inrange(m71,301,306) | m71 == 299 ) & inrange(m72,11,13))
+		replace c_pnc_any = . if inlist(m63,399,998) | inlist(m67,399,998) | inlist(m71,399,998) | inlist(m75,399,998) | m62 == 8 | m66 == 8 | m70 == 8 
 		
 		gen c_pnc_eff = 0 if m62 != . | m66 != . | m70 != . 
-		replace c_pnc_eff = 1 if (((inrange(m63,100,124) | m63 == 201 ) & inrange(m64,11,13)) | ((inrange(m67,100,124) | m67 == 201) & inrange(m68,11,13))) & (((inrange(m71,100,124) | m71 == 201) & inrange(m72,11,13)))
-		replace c_pnc_eff = . if inlist(m63,199,299,399,998) | inlist(m67,199,299,399,998) | inlist(m71,199,299,399,998) | inlist(m75,199,299,399,998) | m62 == 8 | m66 == 8 | m70 == 8 | m74 == 8
+		replace c_pnc_eff = 1 if (((inrange(m63,100,124) | m63 == 201| m63 == 199 ) & inrange(m64,11,13)) | ((inrange(m67,100,124) | m67 == 201| m67 == 199) & inrange(m68,11,13))) & (((inrange(m71,100,124) | m71 == 201| m71 == 199) & inrange(m72,11,13)))
+		replace c_pnc_eff = . if inlist(m63,299,399,998) | inlist(m67,299,399,998) | inlist(m71,299,399,998) | inlist(m75,299,399,998) | m62 == 8 | m66 == 8 | m70 == 8 | m74 == 8
 		
 	}  
 	
