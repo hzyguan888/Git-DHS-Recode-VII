@@ -71,7 +71,7 @@ gen country = regexs(1) if regexm(country_year, "([a-zA-Z]+)")
 */  
 	
     *c_skin2skin: child placed on mother's bare skin immediately after birth of births in last 2 years
-	gen c_skin2skin = (m77 == 1) if    !inlist(m77,.,8)               //though missing but still a place holder.(the code might change depends on how missing represented in surveys)
+	gen c_skin2skin = (m77 == 1) if    !inlist(m77,.,3,8)               //though missing but still a place holder.(the code might change depends on how missing represented in surveys)
 	
 	*c_sba: Skilled birth attendance of births in last 2 years: go to report to verify how "skilled is defined"
 
