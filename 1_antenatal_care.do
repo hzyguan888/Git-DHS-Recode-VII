@@ -5,7 +5,6 @@
 
 	*c_anc: 4+ antenatal care visits of births in last 2 years	
 	gen c_anc = (inrange(m14,4,97)) if m14<=97                                                //Last pregnancies in last 2 years of women currently aged 15-49	 
-	replace c_anc=0 if m2n ==1 & m14>=98 
 	
 	*c_anc_any: any antenatal care visits of births in last 2 years
 	gen c_anc_any = (inrange(m14,1,97)) if m14<=97
@@ -113,7 +112,7 @@
 	    replace ttprotect = 1 if totet>=2 &  lastinj<=2                                                     //at least 2 shots in last 3 years
 	    replace ttprotect = 1 if totet>=3 &  lastinj<=4                                                     //at least 3 shots in last 5 years
 	    replace ttprotect = 1 if totet>=4 &  lastinj<=9                                                     //at least 4 shots in last 10 years
-	    replace ttprotect = 1 if totet>=5                                                                   //at least 2 shots in lifetime
+	    replace ttprotect = 1 if totet>=5 		                                                       //at least 2 shots in lifetime
 	    lab var ttprotect "Full neonatal tetanus Protection"
 				   
 	    gen rh_anc_neotet = ttprotect
