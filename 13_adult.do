@@ -8,13 +8,33 @@ foreach k in sh246s sh255s sh264s sh246d sh255d sh264d sh221a sh228a sh232a sh32
 	
 *a_inpatient_1y	18y+ household member hospitalized in last 12 months (1/0)
     gen a_inpatient_1y = . 
-	
-	if inlist(name, "Philippines2017") {
-		replace a_inpatient_1y = 0 if hv105 >= 18
-		replace a_inpatient_1y = 1 if a_inpatient_1y == 0 & !inlist(sh222a,.,0)
-		replace a_inpatient_1y = . if sh220 == 8 | sh222a == 0
-		// exclude the person who is deceased or no longer in the household, report p.346
-	}
+    gen a_inpatient_ref =.
+    
+	if inlist(name,"Philippines2013"){
+		replace a_inpatient_1y =0 
+		recode sh212 (8=.)
+		gen ip_30dident = sh208a*sh212 
+		recode ip_30dident sh222a (0=.) // ip_30dident is the line num. for individuals who visit IP for the last 30 days 
+	* sh208a_*line sh222a_*line are line num. for hh members who pay IP visit for last 30d/12m. generate by hhid to prepare for matching with hvidx
+		forvalue i = 1(1)5{      
+			gen sh208a_`i' = ip_30dident		
+			gen sh222a_`i' = sh222a 
+		}
+		foreach i in 1 2 3 4 5{
+			bysort hhid: egen sh208a_`i'line =min(sh208a_`i') 
+			bysort hhid: egen sh222a_`i'line =min(sh222a_`i') 
+				foreach k in 1 2 3 4 5{ 
+					replace sh208a_`k' =. if sh208a_`k'== sh208a_`i'line
+					replace sh222a_`k' =. if sh222a_`k'== sh222a_`i'line
+			}
+		}
+	* generate a_inpatient_1y
+		foreach k in 1 2 3 4 5{
+			replace a_inpatient_1y =1 if sh208a_`k'line == hvidx | sh222a_`k'line== hvidx
+		} // ind. confined in hospital in last 30days/12months if their line number matched with hvidx
+		replace a_inpatient_ref = 12
+		drop sh208a_*  sh222a_*
+	}	// exclude the person who is deceased or no longer in the household, report p.346
 	
 *a_bp_treat	18y + being treated for high blood pressure 
     gen a_bp_treat = . 
